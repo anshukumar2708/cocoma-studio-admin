@@ -20,6 +20,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
           size="sm"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
+          className="hover:scale-105 transition-all duration-200"
         >
           <ChevronLeft className="w-4 h-4 mr-1" />
           Previous
@@ -44,7 +45,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
                 variant={currentPage === pageNum ? "default" : "outline"}
                 size="sm"
                 onClick={() => onPageChange(pageNum)}
-                className="min-w-[36px]"
+                className="min-w-[36px] hover:scale-110 transition-all duration-200"
               >
                 {pageNum}
               </Button>
@@ -57,6 +58,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
           size="sm"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
+          className="hover:scale-105 transition-all duration-200"
         >
           Next
           <ChevronRight className="w-4 h-4 ml-1" />

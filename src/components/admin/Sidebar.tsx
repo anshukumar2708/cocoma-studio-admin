@@ -65,8 +65,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               key={item.url}
               to={item.url}
               end={item.url === "/admin"}
-              className="flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors"
-              activeClassName="bg-primary/10 text-primary font-medium"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-primary/10 hover:text-primary hover:scale-105 transition-all duration-200"
+              activeClassName="bg-primary/15 text-primary font-medium shadow-sm"
             >
               <item.icon className="w-5 h-5" />
               <span>{item.title}</span>
