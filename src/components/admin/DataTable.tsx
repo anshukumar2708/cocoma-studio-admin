@@ -66,7 +66,7 @@ export function DataTable<T>({ data, columns, onEdit, onDelete, idKey }: DataTab
                 {column.sortable ? (
                   <button
                     onClick={() => handleSort(column.key)}
-                    className="flex items-center gap-2 hover:text-primary"
+                    className="flex items-center gap-2 hover:text-primary transition-all duration-200"
                   >
                     {column.label}
                     {sortConfig?.key === column.key && (
@@ -87,7 +87,7 @@ export function DataTable<T>({ data, columns, onEdit, onDelete, idKey }: DataTab
         </TableHeader>
         <TableBody>
           {sortedData.map((item) => (
-            <TableRow key={String(item[idKey])}>
+            <TableRow key={String(item[idKey])} className="hover:bg-primary/5 transition-colors duration-150">
               {columns.map((column) => (
                 <TableCell key={String(column.key)}>
                   {column.render
@@ -101,7 +101,7 @@ export function DataTable<T>({ data, columns, onEdit, onDelete, idKey }: DataTab
                     variant="ghost"
                     size="icon"
                     onClick={() => onEdit(item)}
-                    className="hover:bg-primary/10 hover:text-primary"
+                    className="hover:bg-primary/10 hover:text-primary transition-all duration-200"
                   >
                     <Edit className="w-4 h-4" />
                   </Button>
@@ -109,7 +109,7 @@ export function DataTable<T>({ data, columns, onEdit, onDelete, idKey }: DataTab
                     variant="ghost"
                     size="icon"
                     onClick={() => onDelete(item)}
-                    className="hover:bg-destructive/10 hover:text-destructive"
+                    className="hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
