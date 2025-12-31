@@ -1,10 +1,10 @@
 import { NavLink } from "@/components/NavLink";
-import { 
-  LayoutDashboard, 
-  FileText, 
-  Briefcase, 
-  Image, 
-  Settings, 
+import {
+  LayoutDashboard,
+  FileText,
+  Briefcase,
+  Image,
+  Settings,
   Users,
   MessageSquare,
   X
@@ -18,6 +18,7 @@ interface SidebarProps {
 
 const navItems = [
   { title: "Dashboard", icon: LayoutDashboard, url: "/admin" },
+  { title: "Banners", icon: Briefcase, url: "/admin/banners" },
   { title: "Services", icon: Briefcase, url: "/admin/services" },
   { title: "Portfolio", icon: Image, url: "/admin/portfolio" },
   { title: "Blog Posts", icon: FileText, url: "/admin/blog" },
@@ -31,12 +32,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     <>
       {/* Overlay for mobile */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={onClose}
         />
       )}
-      
+
       {/* Sidebar */}
       <aside
         className={cn(
@@ -49,7 +50,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-primary-foreground font-bold">C</span>
             </div>
-            <h2 className="text-lg font-semibold">Cocoma Admin</h2>
+            <h2 className="text-lg font-semibold">Cocoma Studios</h2>
           </div>
           <button
             onClick={onClose}

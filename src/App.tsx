@@ -12,6 +12,7 @@ import Testimonials from "./pages/admin/Testimonials";
 import Team from "./pages/admin/Team";
 import Settings from "./pages/admin/Settings";
 import NotFound from "./pages/NotFound";
+import Banner from "./pages/admin/Banner";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Navigate to="/admin" replace />} />
           <Route path="/admin" element={<AdminLayout><Dashboard /></AdminLayout>} />
+          <Route path="/admin/banners" element={<AdminLayout><Banner /></AdminLayout>} />
           <Route path="/admin/services" element={<AdminLayout><Services /></AdminLayout>} />
           <Route path="/admin/portfolio" element={<AdminLayout><Portfolio /></AdminLayout>} />
           <Route path="/admin/blog" element={<AdminLayout><Blog /></AdminLayout>} />
