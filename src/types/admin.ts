@@ -1,3 +1,16 @@
+export type IStatusType = "active" | "inActive";
+
+export interface IBanner {
+  id?: string;
+  title: string;
+  description: string;
+  pageType: string;
+  status: IStatusType;
+  image?: string;
+  createdAt?: string;
+}
+
+
 export interface Service {
   id: string;
   title: string;

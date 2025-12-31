@@ -6,7 +6,6 @@ import { SearchFilter } from "@/components/admin/SearchFilter";
 import { Pagination } from "@/components/admin/Pagination";
 import { BlogPost } from "@/types/admin";
 import { blogData } from "@/data/blogData";
-import { BlogForm } from "@/components/admin/forms/BlogForm";
 import { toast } from "sonner";
 
 export default function Blog() {
@@ -21,16 +20,15 @@ export default function Blog() {
     { key: "title", label: "Title", sortable: true },
     { key: "author", label: "Author", sortable: true },
     { key: "category", label: "Category", sortable: true },
-    { 
-      key: "status", 
-      label: "Status", 
+    {
+      key: "status",
+      label: "Status",
       sortable: true,
       render: (item) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          item.status === "published" 
-            ? "bg-success/10 text-success" 
-            : "bg-warning/10 text-warning"
-        }`}>
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.status === "published"
+          ? "bg-success/10 text-success"
+          : "bg-warning/10 text-warning"
+          }`}>
           {item.status}
         </span>
       )
@@ -142,7 +140,7 @@ export default function Blog() {
         )}
       </div>
 
-      <BlogForm
+      {/* <BlogForm
         isOpen={isFormOpen}
         onClose={() => {
           setIsFormOpen(false);
@@ -150,7 +148,7 @@ export default function Blog() {
         }}
         onSave={handleSave}
         initialData={editingItem}
-      />
+      /> */}
     </div>
   );
 }
