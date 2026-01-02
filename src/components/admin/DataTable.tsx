@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Edit, Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { Edit, Trash2, ChevronUp, ChevronDown, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -20,12 +20,13 @@ export interface Column<T> {
 interface DataTableProps<T> {
   data: T[];
   columns: Column<T>[];
+  onAdd?: (item: T) => void;
   onEdit: (item: T) => void;
   onDelete: (item: T) => void;
   idKey: keyof T;
 }
 
-export function DataTable<T>({ data, columns, onEdit, onDelete, idKey }: DataTableProps<T>) {
+export function DataTable<T>({ data, columns, onAdd, onEdit, onDelete, idKey }: DataTableProps<T>) {
   const [sortConfig, setSortConfig] = useState<{
     key: keyof T | string;
     direction: "asc" | "desc";
@@ -97,6 +98,14 @@ export function DataTable<T>({ data, columns, onEdit, onDelete, idKey }: DataTab
               ))}
               <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-2">
+                  {onAdd && <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onAdd(item)}
+                    className="hover:bg-success/10 hover:text-success transition-all duration-200"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>}
                   <Button
                     variant="ghost"
                     size="icon"

@@ -11,17 +11,6 @@ export interface IBanner {
 }
 
 
-export interface Service {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  icon: string;
-  features: string[];
-  createdAt: string;
-  status: "active" | "inactive";
-}
-
 export interface Portfolio {
   id: string;
   title: string;

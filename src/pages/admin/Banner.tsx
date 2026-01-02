@@ -8,7 +8,6 @@ import { IBanner } from "@/types/admin";
 import { toast } from "sonner";
 import { BannerForm } from "@/components/admin/forms/BannerForm";
 import { bannerData } from "@/data/bannerData";
-import { Switch } from "@/components/ui/switch";
 import { StatusToggle } from "@/components/admin/StatusToggle";
 
 export default function Banner() {
@@ -47,6 +46,26 @@ export default function Banner() {
     const columns: Column<IBanner>[] = [
         { key: "title", label: "Title", sortable: true },
         { key: "description", label: "Description", sortable: true },
+        {
+            key: "image",
+            label: "Image",
+            sortable: true,
+            render: (item) => (
+                <div className="flex justify-center">
+                    {item.image ? (
+                        <img
+                            src={item.image}
+                            alt={item.title}
+                            className="w-16 h-auto object-cover rounded-md border"
+                        />
+                    ) : (
+                        <div className="w-12 h-12 flex items-center justify-center rounded-md border text-xs text-gray-400">
+                            N/A
+                        </div>
+                    )}
+                </div>
+            )
+        },
         {
             key: "pageType",
             label: "Page Type",
@@ -177,7 +196,7 @@ export default function Banner() {
                     onSearch={handleSearch}
                     onFilter={handleFilter}
                     filterOptions={PAGE_TYPES}
-                    placeholder="Search services..."
+                    placeholder="Search Banner..."
                 />
             </div>
 

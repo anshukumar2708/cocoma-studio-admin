@@ -7,7 +7,7 @@ export const bannerData: IBanner[] = [
     description:
       "Create stunning key art, trailers, and social media content that captures attention.",
     pageType: "home",
-    image: "visual-promotion.jpg",
+    image: "https://images7.alphacoders.com/472/thumb-1920-472502.jpg",
     createdAt: "2024-01-15",
     status: "active",
   },
@@ -17,7 +17,7 @@ export const bannerData: IBanner[] = [
     description:
       "Complete editing, sound design, color grading, and VFX for films and web series.",
     pageType: "about",
-    image: "post-production.jpg",
+    image: "https://images7.alphacoders.com/472/thumb-1920-472502.jpg",
     createdAt: "2024-01-20",
     status: "active",
   },
@@ -27,7 +27,7 @@ export const bannerData: IBanner[] = [
     description:
       "Professional transcription, translation, subtitling, and dubbing in multiple languages.",
     pageType: "service",
-    image: "localisation-services.jpg",
+    image: "https://images7.alphacoders.com/472/thumb-1920-472502.jpg",
     createdAt: "2024-02-01",
     status: "active",
   },
@@ -37,7 +37,7 @@ export const bannerData: IBanner[] = [
     description:
       "End-to-end music video production, from concept to final delivery.",
     pageType: "work",
-    image: "music-video-production.jpg",
+    image: "https://images7.alphacoders.com/472/thumb-1920-472502.jpg",
     createdAt: "2024-02-10",
     status: "active",
   },
@@ -47,7 +47,7 @@ export const bannerData: IBanner[] = [
     description:
       "Professional color correction and digital intermediate services for cinematic quality.",
     pageType: "solutions",
-    image: "color-grading-di.jpg",
+    image: "https://images7.alphacoders.com/472/thumb-1920-472502.jpg",
     createdAt: "2024-02-15",
     status: "inActive",
     },
@@ -57,7 +57,7 @@ export const bannerData: IBanner[] = [
     description:
       "Professional color correction and digital intermediate services for cinematic quality.",
     pageType: "blog",
-    image: "color-grading-di.jpg",
+    image: "https://images7.alphacoders.com/472/thumb-1920-472502.jpg",
     createdAt: "2024-02-15",
     status: "active",
   },

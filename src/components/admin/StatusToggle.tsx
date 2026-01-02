@@ -1,7 +1,7 @@
 import { Switch } from "@/components/ui/switch";
 
 interface StatusToggleProps {
-    status: "active" | "inActive";
+    status: string;
     onToggle: () => void;
 }
 

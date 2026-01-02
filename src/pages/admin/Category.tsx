@@ -202,6 +202,10 @@ export default function Category() {
 
     };
 
+    const onAddService = () => {
+
+    }
+
     const handleEdit = (item: ICategory) => {
         setEditingItem(item);
         setIsFormOpen(true);
@@ -240,7 +244,7 @@ export default function Category() {
                     onSearch={handleSearch}
                     onFilter={handleFilter}
                     filterOptions={FILTER_OPTION}
-                    placeholder="Search services..."
+                    placeholder="Search Category..."
                 />
             </div>
 
@@ -249,6 +253,7 @@ export default function Category() {
                     data={paginatedData}
                     columns={columns}
                     onEdit={handleEdit}
+                    onAdd={onAddService}
                     onDelete={handleDelete}
                     idKey="id"
                 />
