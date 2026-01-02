@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -56,7 +55,7 @@ export function SearchFilter({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
-            {filterOptions.map((option) => (
+            {filterOptions?.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>

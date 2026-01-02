@@ -19,6 +19,7 @@ interface SidebarProps {
 const navItems = [
   { title: "Dashboard", icon: LayoutDashboard, url: "/admin" },
   { title: "Banners", icon: Briefcase, url: "/admin/banners" },
+  { title: "Categories", icon: Briefcase, url: "/admin/categories" },
   { title: "Services", icon: Briefcase, url: "/admin/services" },
   { title: "Portfolio", icon: Image, url: "/admin/portfolio" },
   { title: "Blog Posts", icon: FileText, url: "/admin/blog" },
