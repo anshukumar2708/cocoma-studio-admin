@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { BannerForm } from "@/components/admin/forms/BannerForm";
 import { bannerData } from "@/data/bannerData";
 import { Switch } from "@/components/ui/switch";
+import { StatusToggle } from "@/components/admin/StatusToggle";
 
 export default function Banner() {
     const [data, setData] = useState<IBanner[]>(bannerData);
@@ -70,27 +71,16 @@ export default function Banner() {
                     </span>
                 );
             },
-        }
-        ,
+        },
         {
             key: "status",
             label: "Status",
             sortable: true,
             render: (item) => (
-                <div className="flex justify-center items-center gap-2">
-                    <span
-                        className={`px-2 py-1 w-[75px] text-center rounded-full text-sm font-medium capitalize ${item.status === "active"
-                            ? "bg-success/10 text-success"
-                            : "bg-red-100 text-red-700"
-                            }`}
-                    >
-                        {item.status}
-                    </span>
-                    <Switch
-                        checked={item.status === "active"}
-                        onCheckedChange={() => handleToggle(item.id)}
-                    />
-                </div>
+                <StatusToggle
+                    status={item.status}
+                    onToggle={() => handleToggle(item.id)}
+                />
             ),
         },
         {

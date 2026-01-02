@@ -6,6 +6,7 @@ import { DataTable, Column } from "@/components/admin/DataTable";
 import { SearchFilter } from "@/components/admin/SearchFilter";
 import { Pagination } from "@/components/admin/Pagination";
 import { CategoryForm } from "@/components/admin/forms/CategoryForm";
+import { StatusToggle } from "@/components/admin/StatusToggle";
 
 interface ICategory {
     id: string;
@@ -15,6 +16,7 @@ interface ICategory {
     description: string;
     images: string[];
     keyPoints: string[];
+    status: string;
     createdAt: string;
 }
 
@@ -34,6 +36,7 @@ const categoryData = [
             "Trailer & Teaser Editing",
             "Social Media Creatives",
         ],
+        status: "active",
         createdAt: "2025-01-02",
     },
     {
@@ -49,6 +52,7 @@ const categoryData = [
             "Sound Design & Mixing",
             "Color Grading / DI",
         ],
+        status: "active",
         createdAt: "2025-01-02",
     },
     {
@@ -64,6 +68,7 @@ const categoryData = [
             "Subtitling & Dubbing",
             "Multi-language Administration",
         ],
+        status: "inActive",
         createdAt: "2025-01-02",
     },
     {
@@ -79,9 +84,11 @@ const categoryData = [
             "Key Art Development",
             "Promo & Teaser Editing",
         ],
-        createdAt: "2025-01-0",
+        status: "inActive",
+        createdAt: "2025-01-02",
     },
 ];
+
 
 
 export default function Category() {
@@ -96,6 +103,10 @@ export default function Category() {
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
+
+    const handleToggle = (id: string) => {
+
+    };
 
     const columns: Column<ICategory>[] = [
         {
@@ -157,6 +168,17 @@ export default function Category() {
                         <li key={index}>{point}</li>
                     ))}
                 </ul>
+            ),
+        },
+        {
+            key: "status",
+            label: "Status",
+            sortable: true,
+            render: (item) => (
+                <StatusToggle
+                    status={item?.status}
+                    onToggle={() => handleToggle(item.id)}
+                />
             ),
         },
         {
