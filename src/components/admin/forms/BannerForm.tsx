@@ -24,6 +24,15 @@ interface IBannerFormProps {
   initialData?: IBanner | null;
 }
 
+const menuItems = [
+  { value: "home", label: "Home" },
+  { value: "about", label: "About Us" },
+  { value: "service", label: "Services" },
+  { value: "work", label: "Our Work" },
+  { value: "solutions", label: "Solutions" },
+  { value: "blog", label: "Blog" },
+];
+
 export function BannerForm({
   isOpen,
   onClose,
@@ -142,7 +151,7 @@ export function BannerForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
           {/* Page */}
           <div className="space-y-1.5">
-            <Label>Page</Label>
+            <Label>Page Type</Label>
             <Select
               value={formData.pageType}
               onValueChange={(value: string) =>
@@ -153,10 +162,11 @@ export function BannerForm({
                 <SelectValue placeholder="Select Page" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="home">Home</SelectItem>
-                <SelectItem value="about">About</SelectItem>
-                <SelectItem value="category">Category</SelectItem>
-                <SelectItem value="contact">Contact Us</SelectItem>
+                {menuItems?.map((item) => (
+                  <SelectItem key={item?.value} value={item?.value}>
+                    {item?.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
