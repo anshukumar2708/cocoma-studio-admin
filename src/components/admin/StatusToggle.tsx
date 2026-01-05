@@ -9,7 +9,7 @@ export function StatusToggle({ status, onToggle }: StatusToggleProps) {
     const isActive = status === "active";
 
     return (
-        <div className="flex justify-center items-center gap-2">
+        <div className="flex justify-start items-start gap-2">
             <span
                 className={`px-2 py-1 w-[75px] text-center rounded-full text-sm font-medium capitalize
           ${isActive

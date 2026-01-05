@@ -4,15 +4,8 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { AppDialog } from "../AppDialog";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { AppDialog } from "../../AppDialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export interface ICategory {
     id?: string;
@@ -23,7 +16,7 @@ export interface ICategory {
     icon?: string;
     keyPoints: string[];
     createdAt?: string;
-    status?: "active" | "inactive";
+    status?: "active" | "inActive";
 }
 
 interface CategoryFormProps {
@@ -33,7 +26,7 @@ interface CategoryFormProps {
     initialData?: ICategory | null;
 }
 
-export function CategoryForm({
+export function WorkCategoryForm({
     isOpen,
     onClose,
     onSave,
@@ -46,17 +39,16 @@ export function CategoryForm({
         images: initialData?.images ?? [],
         icon: initialData?.icon ?? "",
         keyPoints: initialData?.keyPoints ?? [""],
-        status: initialData?.status ?? "active",
+        status: "active",
     });
 
     const [images, setImages] = useState<string[]>(formData.images);
     const [iconPreview, setIconPreview] = useState<string>(formData.icon || "");
 
-    /* ---------- IMAGE UPLOAD ---------- */
+    /* ---------- MULTIPLE IMAGES UPLOAD ---------- */
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
         const file = e.target.files[0];
-
         const reader = new FileReader();
         reader.onload = () => {
             if (reader.result) {
@@ -70,16 +62,14 @@ export function CategoryForm({
     };
 
     const removeImage = (index: number) => {
-        const updatedImages = images.filter((_, i) => i !== index);
-        setImages(updatedImages);
-        setFormData({ ...formData, images: updatedImages });
+        const newImages = images.filter((_, i) => i !== index);
+        setImages(newImages);
+        setFormData({ ...formData, images: newImages });
     };
 
     /* ---------- ICON UPLOAD ---------- */
     const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files?.length) return;
-        const file = e.target.files[0];
-
         const reader = new FileReader();
         reader.onload = () => {
             if (reader.result) {
@@ -87,7 +77,7 @@ export function CategoryForm({
                 setFormData({ ...formData, icon: reader.result as string });
             }
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(e.target.files[0]);
         e.target.value = "";
     };
 
@@ -117,12 +107,10 @@ export function CategoryForm({
     /* ---------- SUBMIT ---------- */
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-
         onSave({
             ...formData,
             slug:
-                formData.slug ||
-                formData.title.toLowerCase().replace(/\s+/g, "-"),
+                formData.slug || formData.title.toLowerCase().replace(/\s+/g, "-"),
             createdAt: initialData?.createdAt ?? new Date().toISOString(),
         });
     };
@@ -132,14 +120,14 @@ export function CategoryForm({
             open={isOpen}
             onClose={onClose}
             maxWidth="max-w-4xl"
-            title={initialData ? "Update Category" : "Add Category"}
+            title={initialData ? "Update Work Category" : "Add Work Category"}
         >
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
 
-                {/* BASIC INFO */}
+                {/* ---------- BASIC INFO ---------- */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                        <Label>Title</Label>
+                        <Label>Work Category Title</Label>
                         <Input
                             value={formData.title}
                             onChange={(e) =>
@@ -161,26 +149,10 @@ export function CategoryForm({
                     </div>
                 </div>
 
-                {/* DESCRIPTION */}
-                <div className="space-y-1.5">
-                    <Label>Description</Label>
-                    <Textarea
-                        rows={4}
-                        value={formData.description}
-                        onChange={(e) =>
-                            setFormData({
-                                ...formData,
-                                description: e.target.value,
-                            })
-                        }
-                        required
-                    />
-                </div>
-
-                {/* ICON */}
+                {/* ---------- ICON ---------- */}
                 <div className="space-y-2">
-                    <Label>Category Icon</Label>
-                    <div className="flex gap-3 flex-wrap">
+                    <Label>Work Category Icon</Label>
+                    <div className="flex gap-2 flex-wrap">
                         {iconPreview ? (
                             <div className="relative w-24 h-24">
                                 <img
@@ -203,67 +175,10 @@ export function CategoryForm({
                                     className="hidden"
                                     onChange={handleIconChange}
                                 />
-                                <span className="text-3xl text-gray-400">+</span>
+                                <span className="text-3xl font-bold text-gray-400">+</span>
                             </label>
                         )}
                     </div>
-                </div>
-
-                {/* IMAGES */}
-                <div className="space-y-2">
-                    <Label>Gallery Images</Label>
-                    <div className="flex gap-2 flex-wrap">
-                        {images.map((img, index) => (
-                            <div key={index} className="relative w-24 h-24">
-                                <img
-                                    src={img}
-                                    className="w-full h-full object-cover rounded-md border"
-                                />
-                                <button
-                                    type="button"
-                                    className="absolute -top-2 -right-2 bg-white border rounded-full p-1"
-                                    onClick={() => removeImage(index)}
-                                >
-                                    <X className="w-4 h-4" />
-                                </button>
-                            </div>
-                        ))}
-                        <label className="w-24 h-24 flex items-center justify-center border-2 border-dashed rounded-md cursor-pointer">
-                            <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={handleImageChange}
-                            />
-                            <span className="text-3xl text-gray-400">+</span>
-                        </label>
-                    </div>
-                </div>
-
-                {/* KEY POINTS */}
-                <div className="space-y-3">
-                    <Label>Key Points</Label>
-                    {formData.keyPoints.map((point, index) => (
-                        <div key={index} className="flex gap-2">
-                            <Input
-                                value={point}
-                                onChange={(e) =>
-                                    updateKeyPoint(e.target.value, index)
-                                }
-                            />
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="icon"
-                                onClick={() => removeKeyPoint(index)}
-                            >
-                                <X className="w-4 h-4" />
-                            </Button>
-                        </div>
-                    ))}
-                    <Button type="button" variant="outline" onClick={addKeyPoint}>
-                        + Add Key Point
-                    </Button>
                 </div>
 
                 {/* STATUS  */}
@@ -271,7 +186,7 @@ export function CategoryForm({
                     <Label>Status</Label>
                     <Select
                         value={formData.status}
-                        onValueChange={(value: "active" | "inactive") =>
+                        onValueChange={(value: "active" | "inActive") =>
                             setFormData({ ...formData, status: value })
                         }
                     >
@@ -285,13 +200,14 @@ export function CategoryForm({
                     </Select>
                 </div>
 
-                {/* ACTIONS */}
-                <div className="flex justify-end gap-3 pt-4 border-t">
+
+                {/* ---------- ACTIONS ---------- */}
+                <div className="grid grid-cols-2 gap-3 pt-4">
                     <Button variant="outline" type="button" onClick={onClose}>
                         Cancel
                     </Button>
                     <Button type="submit">
-                        {initialData ? "Update Category" : "Create Category"}
+                        {initialData ? "Update Work Category" : "Create Work Category"}
                     </Button>
                 </div>
             </form>

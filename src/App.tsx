@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AdminLayout } from "./layouts/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import Services from "./pages/admin/Services";
-import Portfolio from "./pages/admin/Portfolio";
 import Blog from "./pages/admin/Blog";
 import Testimonials from "./pages/admin/Testimonials";
 import Team from "./pages/admin/Team";
@@ -14,6 +13,8 @@ import Settings from "./pages/admin/Settings";
 import NotFound from "./pages/NotFound";
 import Banner from "./pages/admin/Banner";
 import Category from "./pages/admin/Category";
+import WorkCategory from "./pages/admin/OurWork/WorkCategory";
+import WorkItems from "./pages/admin/OurWork/WorkItems";
 
 const queryClient = new QueryClient();
 
@@ -29,7 +30,8 @@ const App = () => (
           <Route path="/admin/banners" element={<AdminLayout><Banner /></AdminLayout>} />
           <Route path="/admin/categories" element={<AdminLayout><Category /></AdminLayout>} />
           <Route path="/admin/services" element={<AdminLayout><Services /></AdminLayout>} />
-          <Route path="/admin/portfolio" element={<AdminLayout><Portfolio /></AdminLayout>} />
+          <Route path="/admin/work-categories" element={<AdminLayout><WorkCategory /></AdminLayout>} />
+          <Route path="/admin/work-items" element={<AdminLayout><WorkItems /></AdminLayout>} />
           <Route path="/admin/blog" element={<AdminLayout><Blog /></AdminLayout>} />
           <Route path="/admin/testimonials" element={<AdminLayout><Testimonials /></AdminLayout>} />
           <Route path="/admin/team" element={<AdminLayout><Team /></AdminLayout>} />
