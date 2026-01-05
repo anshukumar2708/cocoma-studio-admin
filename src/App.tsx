@@ -14,8 +14,8 @@ import NotFound from "./pages/NotFound";
 import Banner from "./pages/admin/Banner";
 import Category from "./pages/admin/Category";
 import WorkCategory from "./pages/admin/OurWork/WorkCategory";
-import WorkItems from "./pages/admin/OurWork/WorkItems";
 import WorkItem from "./pages/admin/OurWork/WorkItems";
+import Solutions from "./pages/admin/Solutions";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +33,7 @@ const App = () => (
           <Route path="/admin/services" element={<AdminLayout><Services /></AdminLayout>} />
           <Route path="/admin/work-categories" element={<AdminLayout><WorkCategory /></AdminLayout>} />
           <Route path="/admin/work-items" element={<AdminLayout><WorkItem /></AdminLayout>} />
+          <Route path="/admin/solutions" element={<AdminLayout><Solutions /></AdminLayout>} />
           <Route path="/admin/blog" element={<AdminLayout><Blog /></AdminLayout>} />
           <Route path="/admin/testimonials" element={<AdminLayout><Testimonials /></AdminLayout>} />
           <Route path="/admin/team" element={<AdminLayout><Team /></AdminLayout>} />

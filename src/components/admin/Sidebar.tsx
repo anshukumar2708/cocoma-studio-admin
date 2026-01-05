@@ -59,6 +59,11 @@ const navItems = [
     ],
   },
   {
+    title: "Solutions",
+    icon: FileText,
+    url: "/admin/solutions",
+  },
+  {
     title: "Blog Posts",
     icon: FileText,
     url: "/admin/blog",
