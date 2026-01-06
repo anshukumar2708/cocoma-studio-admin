@@ -16,6 +16,7 @@ import Category from "./pages/admin/Category";
 import WorkCategory from "./pages/admin/OurWork/WorkCategory";
 import WorkItem from "./pages/admin/OurWork/WorkItems";
 import Solutions from "./pages/admin/Solutions";
+import Login from "./pages/admin/Login";
 
 const queryClient = new QueryClient();
 
@@ -27,7 +28,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/admin" replace />} />
-          <Route path="/admin" element={<AdminLayout><Dashboard /></AdminLayout>} />
+          <Route path="/admin" element={<Login />} />
+          <Route path="/admin/dashboard" element={<AdminLayout><Dashboard /></AdminLayout>} />
           <Route path="/admin/banners" element={<AdminLayout><Banner /></AdminLayout>} />
           <Route path="/admin/categories" element={<AdminLayout><Category /></AdminLayout>} />
           <Route path="/admin/services" element={<AdminLayout><Services /></AdminLayout>} />
