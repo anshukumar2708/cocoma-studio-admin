@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AppDialog } from "../AppDialog";
+import { AppDialog } from "../../AppDialog";
 
 export interface IService {
   id?: string;

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { SearchFilter } from "@/components/admin/SearchFilter";
 import { Pagination } from "@/components/admin/Pagination";
-import { CategoryForm } from "@/components/admin/forms/CategoryForm";
+import { CategoryForm } from "@/components/admin/forms/Services/CategoryForm";
 import { StatusToggle } from "@/components/admin/StatusToggle";
 
 interface ICategory {

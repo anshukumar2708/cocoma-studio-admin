@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/admin/DataTable";
 import { SearchFilter } from "@/components/admin/SearchFilter";
 import { Pagination } from "@/components/admin/Pagination";
-import { ServiceForm } from "@/components/admin/forms/ServiceForm";
+import { ServiceForm } from "@/components/admin/forms/Services/ServiceForm";
 import { toast } from "sonner";
 import { StatusToggle } from "@/components/admin/StatusToggle";
 
