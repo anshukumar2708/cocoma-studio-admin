@@ -285,13 +285,13 @@ export function CategoryForm({
                     </Select>
                 </div>
 
-                {/* ACTIONS */}
-                <div className="flex justify-end gap-3 pt-4 border-t">
-                    <Button variant="outline" type="button" onClick={onClose}>
+                {/* ---------- ACTIONS ---------- */}
+                <div className="grid grid-cols-2 gap-3 pt-4">
+                    <Button type="button" variant="outline" onClick={onClose}>
                         Cancel
                     </Button>
                     <Button type="submit">
-                        {initialData ? "Update Category" : "Create Category"}
+                        {initialData ? "Update Service Category" : "Create Service Category"}
                     </Button>
                 </div>
             </form>

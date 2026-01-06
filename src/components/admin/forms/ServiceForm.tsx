@@ -303,7 +303,7 @@ export function ServiceForm({
             Cancel
           </Button>
           <Button type="submit">
-            {initialData ? "Update" : "Create"}
+            {initialData ? "Update Service" : "Create Service"}
           </Button>
         </div>
       </form>

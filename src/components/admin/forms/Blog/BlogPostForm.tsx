@@ -23,8 +23,11 @@ export interface ICategory {
     description: string;
     image: string;
     category: string;
+    author: string;
+    readTime: string;
+    sortOrder: number;
     createdAt?: string;
-    status?: "active" | "inactive"; // ✅ fixed
+    status?: "active" | "inActive";
 }
 
 interface CategoryFormProps {
@@ -36,7 +39,7 @@ interface CategoryFormProps {
 
 /* ================= COMPONENT ================= */
 
-export function WorkItemForm({
+export function BlogPostForm({
     isOpen,
     onClose,
     onSave,
@@ -48,10 +51,13 @@ export function WorkItemForm({
         description: initialData?.description ?? "",
         image: initialData?.image ?? "",
         category: initialData?.category ?? "",
+        author: initialData?.author ?? "",
+        readTime: initialData?.readTime ?? "",
+        sortOrder: initialData?.sortOrder ?? 1,
         status: initialData?.status ?? "active",
     });
 
-    /* ---------- IMAGE UPLOAD (SINGLE) ---------- */
+    /* ---------- IMAGE UPLOAD ---------- */
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files?.length) return;
 
@@ -60,10 +66,7 @@ export function WorkItemForm({
 
         reader.onload = () => {
             if (reader.result) {
-                setFormData({
-                    ...formData,
-                    image: reader.result as string,
-                });
+                setFormData({ ...formData, image: reader.result as string });
             }
         };
 
@@ -92,8 +95,8 @@ export function WorkItemForm({
         <AppDialog
             open={isOpen}
             onClose={onClose}
-            maxWidth="max-w-4xl"
-            title={initialData ? "Update Work Item" : "Add Work Item"}
+            maxWidth="max-w-5xl"
+            title={initialData ? "Update Blog Post" : "Create Blog Post"}
         >
             <form onSubmit={handleSubmit} className="space-y-8">
 
@@ -122,6 +125,61 @@ export function WorkItemForm({
                     </div>
                 </div>
 
+                {/* AUTHOR + READ TIME + SORT ORDER */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-1.5">
+                        <Label>Author</Label>
+                        <Input
+                            value={formData.author}
+                            onChange={(e) =>
+                                setFormData({ ...formData, author: e.target.value })
+                            }
+                            placeholder="Author name"
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <Label>Read Time</Label>
+                        <Input
+                            value={formData.readTime}
+                            onChange={(e) =>
+                                setFormData({ ...formData, readTime: e.target.value })
+                            }
+                            placeholder="5 min"
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <Label>Sort Order</Label>
+                        <Input
+                            type="number"
+                            min={1}
+                            value={formData.sortOrder}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    sortOrder: Number(e.target.value),
+                                })
+                            }
+                        />
+                    </div>
+                </div>
+
+                {/* DESCRIPTION */}
+                <div className="space-y-1.5">
+                    <Label>Description</Label>
+                    <Textarea
+                        rows={4}
+                        value={formData.description}
+                        onChange={(e) =>
+                            setFormData({ ...formData, description: e.target.value })
+                        }
+                        required
+                    />
+                </div>
+
                 {/* CATEGORY + STATUS */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
@@ -142,11 +200,11 @@ export function WorkItemForm({
                         </Select>
                     </div>
 
-                    <div className="space-y-1.5 w-full">
+                    <div className="space-y-1.5">
                         <Label>Status</Label>
                         <Select
                             value={formData.status}
-                            onValueChange={(value: "active" | "inactive") =>
+                            onValueChange={(value: "active" | "inActive") =>
                                 setFormData({ ...formData, status: value })
                             }
                         >
@@ -155,23 +213,10 @@ export function WorkItemForm({
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="active">Active</SelectItem>
-                                <SelectItem value="inactive">Inactive</SelectItem>
+                                <SelectItem value="inActive">Inactive</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
-                </div>
-
-                {/* DESCRIPTION */}
-                <div className="space-y-1.5">
-                    <Label>Description</Label>
-                    <Textarea
-                        rows={4}
-                        value={formData.description}
-                        onChange={(e) =>
-                            setFormData({ ...formData, description: e.target.value })
-                        }
-                        required
-                    />
                 </div>
 
                 {/* IMAGE */}
@@ -205,16 +250,15 @@ export function WorkItemForm({
                     )}
                 </div>
 
-                {/* ---------- ACTIONS ---------- */}
+                {/* ACTIONS */}
                 <div className="grid grid-cols-2 gap-3 pt-4">
                     <Button type="button" variant="outline" onClick={onClose}>
                         Cancel
                     </Button>
                     <Button type="submit">
-                        {initialData ? "Update Work Item" : "Create Work Item"}
+                        {initialData ? "Update Blog Post" : "Create Blog Post"}
                     </Button>
                 </div>
-
             </form>
         </AppDialog>
     );

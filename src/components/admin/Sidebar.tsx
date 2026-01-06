@@ -70,9 +70,20 @@ const navItems = [
     url: "/admin/solutions",
   },
   {
-    title: "Blog Posts",
-    icon: FileText,
-    url: "/admin/blog",
+    title: "Blogs",
+    icon: Image,
+    children: [
+      {
+        title: "Blog Categories",
+        icon: Folder,
+        url: "/admin/blog-categories",
+      },
+      {
+        title: "Blog Posts",
+        icon: FileText,
+        url: "/admin/blog-post",
+      },
+    ],
   },
   {
     title: "Testimonials",

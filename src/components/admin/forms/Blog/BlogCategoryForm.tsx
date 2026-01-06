@@ -26,7 +26,7 @@ interface CategoryFormProps {
     initialData?: ICategory | null;
 }
 
-export function WorkCategoryForm({
+export function BlogCategoryForm({
     isOpen,
     onClose,
     onSave,
@@ -41,8 +41,6 @@ export function WorkCategoryForm({
         keyPoints: initialData?.keyPoints ?? [""],
         status: "active",
     });
-
-    const [images, setImages] = useState<string[]>(formData.images);
     const [iconPreview, setIconPreview] = useState<string>(formData.icon || "");
 
     /* ---------- ICON UPLOAD ---------- */
@@ -64,24 +62,6 @@ export function WorkCategoryForm({
         setFormData({ ...formData, icon: "" });
     };
 
-    /* ---------- KEY POINTS ---------- */
-    const updateKeyPoint = (value: string, index: number) => {
-        const updated = [...formData.keyPoints];
-        updated[index] = value;
-        setFormData({ ...formData, keyPoints: updated });
-    };
-
-    const addKeyPoint = () => {
-        setFormData({ ...formData, keyPoints: [...formData.keyPoints, ""] });
-    };
-
-    const removeKeyPoint = (index: number) => {
-        setFormData({
-            ...formData,
-            keyPoints: formData.keyPoints.filter((_, i) => i !== index),
-        });
-    };
-
     /* ---------- SUBMIT ---------- */
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -98,14 +78,14 @@ export function WorkCategoryForm({
             open={isOpen}
             onClose={onClose}
             maxWidth="max-w-4xl"
-            title={initialData ? "Update Work Category" : "Add Work Category"}
+            title={initialData ? "Update Blog Category" : "Add Blog Category"}
         >
             <form onSubmit={handleSubmit} className="space-y-6">
 
                 {/* ---------- BASIC INFO ---------- */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                        <Label>Work Category Title</Label>
+                        <Label>Blog Category Title</Label>
                         <Input
                             value={formData.title}
                             onChange={(e) =>
@@ -129,7 +109,7 @@ export function WorkCategoryForm({
 
                 {/* ---------- ICON ---------- */}
                 <div className="space-y-2">
-                    <Label>Work Category Icon</Label>
+                    <Label>Blog Category Icon</Label>
                     <div className="flex gap-2 flex-wrap">
                         {iconPreview ? (
                             <div className="relative w-24 h-24">
@@ -185,7 +165,7 @@ export function WorkCategoryForm({
                         Cancel
                     </Button>
                     <Button type="submit">
-                        {initialData ? "Update Work Category" : "Create Work Category"}
+                        {initialData ? "Update Blog Category" : "Add Blog Category"}
                     </Button>
                 </div>
             </form>
