@@ -33,14 +33,20 @@ const navItems = [
     url: "/admin/banners",
   },
   {
-    title: "Categories",
-    icon: FolderTree,
-    url: "/admin/categories",
-  },
-  {
     title: "Services",
-    icon: Wrench,
-    url: "/admin/services",
+    icon: Image,
+    children: [
+      {
+        title: "Categories",
+        icon: FolderTree,
+        url: "/admin/categories",
+      },
+      {
+        title: "Service Items",
+        icon: Wrench,
+        url: "/admin/services",
+      },
+    ]
   },
   {
     title: "Our Work",
@@ -52,7 +58,7 @@ const navItems = [
         url: "/admin/work-categories",
       },
       {
-        title: "Items",
+        title: "Work Items",
         icon: Layers,
         url: "/admin/work-items",
       },
