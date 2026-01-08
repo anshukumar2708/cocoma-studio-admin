@@ -147,30 +147,6 @@ export default function Banner() {
         }
     };
 
-    const handleSave = (banner: Partial<IBanner>) => {
-        if (editingItem) {
-            const updated = data.map((item) =>
-                item.id === editingItem.id ? { ...item, ...banner } : item
-            );
-            setData(updated);
-            setFilteredData(updated);
-            toast.success("Service updated successfully");
-        } else {
-            const newService = {
-                ...banner,
-                id: String(data.length + 1),
-                createdAt: new Date().toISOString().split("T")[0],
-            } as IBanner;
-            setData([...data, newService]);
-            setFilteredData([...filteredData, newService]);
-            toast.success("Service created successfully");
-        }
-        setIsFormOpen(false);
-        setEditingItem(null);
-    };
-
-
-
     const PAGE_TYPES = [
         { value: "home", label: "Home" },
         { value: "about", label: "About" },
@@ -223,7 +199,6 @@ export default function Banner() {
                     setIsFormOpen(false);
                     setEditingItem(null);
                 }}
-                onSave={handleSave}
                 initialData={editingItem}
             />
         </div>

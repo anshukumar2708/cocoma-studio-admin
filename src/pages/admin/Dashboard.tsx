@@ -16,6 +16,7 @@ export default function Dashboard() {
     { action: "Service activated", time: "2 days ago", icon: Briefcase },
   ];
 
+
   return (
     <div className="space-y-6">
       <div>

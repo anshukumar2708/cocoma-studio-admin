@@ -13,14 +13,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AppDialog } from "../AppDialog";
-import { IBanner, IStatusType } from "@/types/admin";
-
-
+import { IBanner } from "@/types/admin";
+import axiosInstance from "@/lib/api/axiosInstance";
 
 interface IBannerFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: IBanner) => void;
   initialData?: IBanner | null;
 }
 
@@ -36,7 +34,6 @@ const menuItems = [
 export function BannerForm({
   isOpen,
   onClose,
-  onSave,
   initialData,
 }: IBannerFormProps) {
   const [formData, setFormData] = useState<IBanner>({
@@ -44,12 +41,13 @@ export function BannerForm({
     description: "",
     pageType: "home",
     status: "active",
+    displayOrder: null,
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  // Populate form in edit mode
+  /* ---------------- Populate form on update ---------------- */
   useEffect(() => {
     if (initialData && isOpen) {
       setFormData({
@@ -57,6 +55,7 @@ export function BannerForm({
         description: initialData.description,
         pageType: initialData.pageType,
         status: initialData.status,
+        displayOrder: initialData.displayOrder ?? null,
       });
 
       if (initialData.image) {
@@ -65,6 +64,7 @@ export function BannerForm({
     }
   }, [initialData, isOpen]);
 
+  /* ---------------- Image Change ---------------- */
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -78,22 +78,55 @@ export function BannerForm({
     setImagePreview(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  /* ---------------- Submit ---------------- */
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const banner: IBanner = {
-      ...formData,
-      image: imagePreview ?? undefined,
-    };
+    try {
+      const formPayload = new FormData();
 
-    onSave(banner);
+      formPayload.append("title", formData.title);
+      formPayload.append("description", formData.description);
+      formPayload.append("page_type", formData.pageType);
+      formPayload.append("status", String(formData.status));
+
+      if (formData.displayOrder !== null) {
+        formPayload.append(
+          "display_order",
+          String(formData.displayOrder)
+        );
+      }
+
+      if (imageFile) {
+        formPayload.append("image", imageFile);
+      }
+
+      const response = initialData
+        ? await axiosInstance.put(
+          `admin/banners/${initialData.id}`,
+          formPayload
+        )
+        : await axiosInstance.post(
+          "admin/banners",
+          formPayload
+        );
+
+      console.log("Banner Success", response.data);
+      onClose();
+    } catch (error) {
+      console.error(
+        "Banner Error",
+        error.response?.data || error.message
+      );
+    }
   };
 
+  /* ---------------- UI ---------------- */
   return (
     <AppDialog
       open={isOpen}
       onClose={onClose}
-      title={initialData ? "Update Blog" : "Add New Blog"}
+      title={initialData ? "Update Banner" : "Add New Banner"}
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Title */}
@@ -121,18 +154,18 @@ export function BannerForm({
           />
         </div>
 
-        {/* Image Upload */}
+        {/* Image */}
         <div className="space-y-2">
           <Label>Banner Image</Label>
 
           {!imagePreview ? (
             <Input type="file" accept="image/*" onChange={handleImageChange} />
           ) : (
-            <div className="relative w-full max-w-sm">
+            <div className="relative">
               <img
                 src={imagePreview}
                 alt="Preview"
-                className="rounded-md border-2 border-gray-300"
+                className="rounded-md border"
               />
               <Button
                 type="button"
@@ -147,14 +180,14 @@ export function BannerForm({
           )}
         </div>
 
-        {/* Page + Status */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-          {/* Page */}
+        {/* Page, Status, Order */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Page Type */}
           <div className="space-y-1.5">
             <Label>Page Type</Label>
             <Select
               value={formData.pageType}
-              onValueChange={(value: string) =>
+              onValueChange={(value) =>
                 setFormData({ ...formData, pageType: value })
               }
             >
@@ -162,9 +195,9 @@ export function BannerForm({
                 <SelectValue placeholder="Select Page" />
               </SelectTrigger>
               <SelectContent>
-                {menuItems?.map((item) => (
-                  <SelectItem key={item?.value} value={item?.value}>
-                    {item?.label}
+                {menuItems.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -176,7 +209,7 @@ export function BannerForm({
             <Label>Status</Label>
             <Select
               value={formData.status}
-              onValueChange={(value: IStatusType) =>
+              onValueChange={(value) =>
                 setFormData({ ...formData, status: value })
               }
             >
@@ -185,23 +218,33 @@ export function BannerForm({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="inActive">Inactive</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Display Order */}
+          <div className="space-y-1.5">
+            <Label>Display Order</Label>
+            <Input
+              type="number"
+              value={formData.displayOrder ?? ""}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  displayOrder: Number(e.target.value),
+                })
+              }
+            />
           </div>
         </div>
 
         {/* Actions */}
         <div className="grid grid-cols-2 gap-3 pt-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onClose}
-            className="w-full"
-          >
+          <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" className="w-full">
+          <Button type="submit">
             {initialData ? "Update" : "Create"}
           </Button>
         </div>

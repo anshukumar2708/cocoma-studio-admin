@@ -1,21 +1,32 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+import axiosInstance from "@/lib/api/axiosInstance";
+import { toast } from "sonner";
 
 const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
 
-    const LoginHandler = (e) => {
+    const LoginHandler = async (e) => {
         e.preventDefault();
 
-        if (email === "admin@cocoma.com" && password === "cocoma@123") {
-            navigate("/admin/dashboard");
-        } else {
-            alert("Invalid Credential");
+        try {
+            const response = await axiosInstance.post("login", {
+                email,
+                password
+            });
+            if (response) {
+                localStorage.setItem("token", response?.data?.data?.token);
+                toast.success("Login successfully");
+                navigate("/admin/dashboard");
+            }
+        } catch (error) {
+            console.log(`Login error ${error.message}`);
         }
     };
-
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
@@ -23,7 +34,9 @@ const Login = () => {
 
                 {/* Header */}
                 <div className="text-center mb-6">
-                    <h1 className="text-2xl font-bold text-gray-800">Welcome To Cocoma Studios</h1>
+                    <h1 className="text-2xl font-bold text-gray-800">
+                        Welcome To Cocoma Studios
+                    </h1>
                     <p className="text-sm text-gray-500 mt-1">
                         Please login to your account
                     </p>
@@ -40,7 +53,7 @@ const Login = () => {
                         <input
                             type="email"
                             placeholder="you@example.com"
-                            onChange={(event) => setEmail(event.target.value)}
+                            onChange={(e) => setEmail(e.target.value)}
                             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                         />
                     </div>
@@ -50,12 +63,31 @@ const Login = () => {
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Password
                         </label>
-                        <input
-                            type="password"
-                            placeholder="••••••••"
-                            onChange={(event) => setPassword(event.target.value)}
-                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                        />
+
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full px-4 py-2 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                            />
+
+                            {/* Show / Hide Icon */}
+                            {password.length > 0 && (
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900"
+                                >
+                                    {showPassword ? (
+                                        <EyeOff size={20} />
+                                    ) : (
+                                        <Eye size={20} />
+                                    )}
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     {/* Forgot Password */}

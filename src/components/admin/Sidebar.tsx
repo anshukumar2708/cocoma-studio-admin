@@ -25,7 +25,7 @@ const navItems = [
   {
     title: "Dashboard",
     icon: LayoutDashboard,
-    url: "/admin",
+    url: "/admin/dashboard",
   },
   {
     title: "Banners",

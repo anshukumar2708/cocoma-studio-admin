@@ -5,8 +5,9 @@ export interface IBanner {
   title: string;
   description: string;
   pageType: string;
-  status: IStatusType;
+  status: string;
   image?: string;
+  displayOrder: number | string | null;
   createdAt?: string;
 }
 
