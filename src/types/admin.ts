@@ -4,11 +4,12 @@ export interface IBanner {
   id?: string;
   title: string;
   description: string;
-  pageType: string;
+  page_type: string;
   status: string;
   image?: string;
-  displayOrder: number | string | null;
-  createdAt?: string;
+  display_order: number | string | null;
+  created_at?: string;
+  updated_at?: string;
 }
 
 

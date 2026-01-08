@@ -39,9 +39,10 @@ export function BannerForm({
   const [formData, setFormData] = useState<IBanner>({
     title: "",
     description: "",
-    pageType: "home",
+    image: "",
+    page_type: "",
     status: "active",
-    displayOrder: null,
+    display_order: null,
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -51,15 +52,15 @@ export function BannerForm({
   useEffect(() => {
     if (initialData && isOpen) {
       setFormData({
-        title: initialData.title,
-        description: initialData.description,
-        pageType: initialData.pageType,
-        status: initialData.status,
-        displayOrder: initialData.displayOrder ?? null,
+        title: initialData?.title,
+        description: initialData?.description,
+        page_type: initialData?.page_type,
+        status: initialData?.status,
+        display_order: initialData?.display_order ?? null,
       });
 
-      if (initialData.image) {
-        setImagePreview(initialData.image);
+      if (initialData?.image) {
+        setImagePreview(initialData?.image);
       }
     }
   }, [initialData, isOpen]);
@@ -87,13 +88,13 @@ export function BannerForm({
 
       formPayload.append("title", formData.title);
       formPayload.append("description", formData.description);
-      formPayload.append("page_type", formData.pageType);
+      formPayload.append("page_type", formData.page_type);
       formPayload.append("status", String(formData.status));
 
-      if (formData.displayOrder !== null) {
+      if (formData.display_order !== null) {
         formPayload.append(
           "display_order",
-          String(formData.displayOrder)
+          String(formData.display_order)
         );
       }
 
@@ -102,8 +103,8 @@ export function BannerForm({
       }
 
       const response = initialData
-        ? await axiosInstance.put(
-          `admin/banners/${initialData.id}`,
+        ? await axiosInstance.post(
+          `admin/banners/${initialData?.id}`,
           formPayload
         )
         : await axiosInstance.post(
@@ -121,11 +122,26 @@ export function BannerForm({
     }
   };
 
+
+  const onCloseModel = () => {
+    onClose();
+    setFormData((prev) => ({
+      ...prev,
+      title: "",
+      description: "",
+      image: "",
+      page_type: "",
+      status: "active",
+      display_order: null,
+    }))
+    setImagePreview(null);
+  }
+
   /* ---------------- UI ---------------- */
   return (
     <AppDialog
       open={isOpen}
-      onClose={onClose}
+      onClose={onCloseModel}
       title={initialData ? "Update Banner" : "Add New Banner"}
     >
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -186,9 +202,9 @@ export function BannerForm({
           <div className="space-y-1.5">
             <Label>Page Type</Label>
             <Select
-              value={formData.pageType}
+              value={formData.page_type}
               onValueChange={(value) =>
-                setFormData({ ...formData, pageType: value })
+                setFormData({ ...formData, page_type: value })
               }
             >
               <SelectTrigger>
@@ -218,7 +234,7 @@ export function BannerForm({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inActive">Inactive</SelectItem>
+                <SelectItem value="inactive">InActive</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -228,11 +244,11 @@ export function BannerForm({
             <Label>Display Order</Label>
             <Input
               type="number"
-              value={formData.displayOrder ?? ""}
+              value={formData.display_order ?? ""}
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  displayOrder: Number(e.target.value),
+                  display_order: (e.target.value),
                 })
               }
             />

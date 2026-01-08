@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable, Column } from "@/components/admin/DataTable";
@@ -7,41 +7,35 @@ import { Pagination } from "@/components/admin/Pagination";
 import { IBanner } from "@/types/admin";
 import { toast } from "sonner";
 import { BannerForm } from "@/components/admin/forms/BannerForm";
-import { bannerData } from "@/data/bannerData";
 import { StatusToggle } from "@/components/admin/StatusToggle";
+import axiosInstance from "@/lib/api/axiosInstance";
+import { FormattedDate } from "@/lib/utils";
 
 export default function Banner() {
-    const [data, setData] = useState<IBanner[]>(bannerData);
-    const [filteredData, setFilteredData] = useState<IBanner[]>(bannerData);
+    const [bannerData, setBannerData] = useState<IBanner[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<IBanner | null>(null);
     const itemsPerPage = 5;
 
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    const paginatedData = filteredData.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
+    const totalPages = Math.ceil(bannerData?.length / itemsPerPage);
 
 
-    const handleToggle = (id: string) => {
-        // Update the main data state
-        const updatedData = data?.map((item) =>
-            item?.id === id
-                ? { ...item, status: item.status === "active" ? "inActive" : "active" }
-                : item
-        );
-        setData(updatedData);
+    useEffect(() => {
+        const getBannerData = async () => {
+            try {
+                const response = await axiosInstance.get("/admin/banners");
+                if (response) {
+                    setBannerData(response?.data?.data);
+                }
+                console.log("response===>", response?.data?.data);
+            } catch (error) {
+                console.log(`Get Banner api fail ${error?.message}`);
+            }
+        };
 
-        // Also update filteredData if a filter is active
-        const updatedFiltered = filteredData?.map((item) =>
-            item.id === id
-                ? { ...item, status: item.status === "active" ? "inActive" : "active" }
-                : item
-        );
-        setFilteredData(updatedFiltered);
-    };
+        getBannerData();
+    }, []);
 
     const columns: Column<IBanner>[] = [
         { key: "title", label: "Title", sortable: true },
@@ -67,7 +61,7 @@ export default function Banner() {
             )
         },
         {
-            key: "pageType",
+            key: "page_type",
             label: "Page Type",
             sortable: true,
             render: (item) => {
@@ -81,13 +75,13 @@ export default function Banner() {
                 };
 
                 return (
-                    <span
-                        className={`px-2 py-1 rounded-full text-sm font-medium capitalize
-          ${styles[item.pageType] || "bg-muted text-muted-foreground"}
+                    <p
+                        className={`px-2 w-20 flex justify-center items-center py-1 rounded-full text-sm font-medium capitalize
+          ${styles[item?.page_type] || "bg-muted text-muted-foreground"}
         `}
                     >
-                        {item.pageType}
-                    </span>
+                        {item?.page_type}
+                    </p>
                 );
             },
         },
@@ -97,41 +91,37 @@ export default function Banner() {
             sortable: true,
             render: (item) => (
                 <StatusToggle
-                    status={item.status}
-                    onToggle={() => handleToggle(item.id)}
+                    status={item?.status}
+                    onToggle={() => handleToggle(item?.id)}
                 />
             ),
         },
+        { key: "display_order", label: "Display Order", sortable: true },
         {
-            key: "createdAt",
+            key: "created_at",
             label: "Created",
             sortable: true,
             render: (item: IBanner) => (
-                <p className="px-2 py-1 w-20 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                    {item.createdAt}
+                <p className="px-2 py-1 w-24 flex justify-center items-center rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    {FormattedDate(item?.created_at)}
                 </p>
             ),
         }
     ];
 
+
+
+    const handleToggle = (id: string) => {
+
+    };
+
+
     const handleSearch = (query: string) => {
-        const filtered = data.filter((item) =>
-            Object.values(item).some((value) =>
-                String(value).toLowerCase().includes(query.toLowerCase())
-            )
-        );
-        setFilteredData(filtered);
-        setCurrentPage(1);
+
     };
 
     const handleFilter = (filter: string) => {
-        if (filter === "all") {
-            setFilteredData(data);
-        } else {
-            const filtered = data.filter((item) => item.pageType === filter);
-            setFilteredData(filtered);
-        }
-        setCurrentPage(1);
+
     };
 
     const handleEdit = (item: IBanner) => {
@@ -140,11 +130,7 @@ export default function Banner() {
     };
 
     const handleDelete = (item: IBanner) => {
-        if (confirm(`Are you sure you want to delete "${item.title}"?`)) {
-            setData(data.filter((d) => d.id !== item.id));
-            setFilteredData(filteredData.filter((d) => d.id !== item.id));
-            toast.success("Service deleted successfully");
-        }
+        toast.success("Banner deleted successfully");
     };
 
     const PAGE_TYPES = [
@@ -176,22 +162,23 @@ export default function Banner() {
                 />
             </div>
 
-            <div data-aos="fade-up" data-aos-delay="100">
-                <DataTable
-                    data={paginatedData}
-                    columns={columns}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    idKey="id"
-                />
-                {totalPages > 1 && (
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
+            {bannerData?.length > 0 &&
+                <div data-aos="fade-up" data-aos-delay="100">
+                    <DataTable
+                        data={bannerData}
+                        columns={columns}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        idKey="id"
                     />
-                )}
-            </div>
+                    {totalPages > 1 && (
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={setCurrentPage}
+                        />
+                    )}
+                </div>}
 
             <BannerForm
                 isOpen={isFormOpen}
