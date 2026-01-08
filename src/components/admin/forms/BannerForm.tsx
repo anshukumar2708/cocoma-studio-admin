@@ -20,6 +20,7 @@ interface IBannerFormProps {
   isOpen: boolean;
   onClose: () => void;
   initialData?: IBanner | null;
+  setBannerData: React.Dispatch<React.SetStateAction<[] | IBanner[]>>;
 }
 
 const menuItems = [
@@ -34,6 +35,7 @@ const menuItems = [
 export function BannerForm({
   isOpen,
   onClose,
+  setBannerData,
   initialData,
 }: IBannerFormProps) {
   const [formData, setFormData] = useState<IBanner>({
@@ -111,6 +113,24 @@ export function BannerForm({
           "admin/banners",
           formPayload
         );
+
+      if (response) {
+        if (initialData && isOpen) {
+          setBannerData((prev) =>
+            prev?.map((item: IBanner) =>
+              item.id === response?.data?.banner?.id
+                ? { ...item, ...response?.data?.banner }
+                : item
+            )
+          );
+        } else {
+          setBannerData((prev) => [
+            response?.data?.banner,
+            ...(prev ?? []),
+          ]);
+        }
+
+      }
 
       console.log("Banner Success", response.data);
       onClose();

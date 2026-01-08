@@ -12,7 +12,7 @@ import axiosInstance from "@/lib/api/axiosInstance";
 import { FormattedDate } from "@/lib/utils";
 
 export default function Banner() {
-    const [bannerData, setBannerData] = useState<IBanner[]>([]);
+    const [bannerData, setBannerData] = useState<IBanner[] | []>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<IBanner | null>(null);
@@ -186,6 +186,7 @@ export default function Banner() {
                     setIsFormOpen(false);
                     setEditingItem(null);
                 }}
+                setBannerData={setBannerData}
                 initialData={editingItem}
             />
         </div>
