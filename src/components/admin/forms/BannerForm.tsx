@@ -38,6 +38,7 @@ export function BannerForm({
   setBannerData,
   initialData,
 }: IBannerFormProps) {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<IBanner>({
     title: "",
     description: "",
@@ -86,6 +87,7 @@ export function BannerForm({
     e.preventDefault();
 
     try {
+      setLoading(true);
       const formPayload = new FormData();
 
       formPayload.append("title", formData.title);
@@ -131,14 +133,14 @@ export function BannerForm({
         }
 
       }
-
-      console.log("Banner Success", response.data);
       onClose();
     } catch (error) {
       console.error(
         "Banner Error",
         error.response?.data || error.message
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -281,7 +283,7 @@ export function BannerForm({
             Cancel
           </Button>
           <Button type="submit">
-            {initialData ? "Update" : "Create"}
+            {initialData ? loading ? "Updating" : "Update" : loading ? "Creating" : "Create"}
           </Button>
         </div>
       </form>

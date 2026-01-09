@@ -17,7 +17,7 @@ export function StatusToggle({ status, onToggle }: StatusToggleProps) {
                         : "bg-red-100 text-red-700"
                     }`}
             >
-                {status}
+                {status === "active" ? status : "InActive"}
             </span>
 
             <Switch

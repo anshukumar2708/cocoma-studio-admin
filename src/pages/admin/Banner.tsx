@@ -10,12 +10,16 @@ import { BannerForm } from "@/components/admin/forms/BannerForm";
 import { StatusToggle } from "@/components/admin/StatusToggle";
 import axiosInstance from "@/lib/api/axiosInstance";
 import { FormattedDate } from "@/lib/utils";
+import UpdateStatusModel from "@/components/admin/UpdateStatusModel";
 
 export default function Banner() {
     const [bannerData, setBannerData] = useState<IBanner[] | []>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isStatusUpdateOpen, setIsStatusUpdateOpen] = useState(false);
+    const [updateData, setUpdateData] = useState(null);
     const [editingItem, setEditingItem] = useState<IBanner | null>(null);
+    const [statusUpdateLoading, setStatusUpdateLoading] = useState(false);
     const itemsPerPage = 5;
 
     const totalPages = Math.ceil(bannerData?.length / itemsPerPage);
@@ -28,7 +32,6 @@ export default function Banner() {
                 if (response) {
                     setBannerData(response?.data?.data);
                 }
-                console.log("response===>", response?.data?.data);
             } catch (error) {
                 console.log(`Get Banner api fail ${error?.message}`);
             }
@@ -92,7 +95,7 @@ export default function Banner() {
             render: (item) => (
                 <StatusToggle
                     status={item?.status}
-                    onToggle={() => handleToggle(item?.id)}
+                    onToggle={() => statusModelOpen(item)}
                 />
             ),
         },
@@ -109,10 +112,10 @@ export default function Banner() {
         }
     ];
 
-
-
-    const handleToggle = (id: string) => {
-
+    // Open model for update status 
+    const statusModelOpen = (data: IBanner) => {
+        setUpdateData(data)
+        setIsStatusUpdateOpen(true);
     };
 
 
@@ -139,6 +142,35 @@ export default function Banner() {
         { value: "category", label: "Category" },
         { value: "contact", label: "Contact Us" },
     ];
+
+    const updateStatus = async (status: string) => {
+        try {
+            setStatusUpdateLoading(true);
+            const response = await axiosInstance.post(
+                `admin/banners/${updateData?.id}`,
+                { status: status }
+            )
+            console.log("update status", response?.data?.banner);
+            if (response) {
+                setBannerData((prev) =>
+                    prev?.map((item: IBanner) =>
+                        item.id === response?.data?.banner?.id
+                            ? {
+                                ...item,
+                                status: response?.data?.banner?.status,
+                            }
+                            : item
+                    )
+                );
+                toast.success("Banner status update successfully");
+                setIsStatusUpdateOpen(false);
+            }
+        } catch (error) {
+            console.log(`Banner status update fail ${error.message}`)
+        } finally {
+            setStatusUpdateLoading(false);
+        }
+    }
 
     return (
         <div className="space-y-6">
@@ -180,6 +212,7 @@ export default function Banner() {
                     )}
                 </div>}
 
+            {/* Add & Update Banner Form */}
             <BannerForm
                 isOpen={isFormOpen}
                 onClose={() => {
@@ -188,6 +221,18 @@ export default function Banner() {
                 }}
                 setBannerData={setBannerData}
                 initialData={editingItem}
+            />
+
+            {/* Update Banner Status Model */}
+            <UpdateStatusModel
+                isOpen={isStatusUpdateOpen}
+                onClose={() => {
+                    setIsStatusUpdateOpen(false);
+                }}
+                initialStatus={updateData?.status}
+                message={`Are you want to update ${updateData?.page_type} banner status from`}
+                loading={statusUpdateLoading}
+                onSubmit={updateStatus}
             />
         </div>
     );
