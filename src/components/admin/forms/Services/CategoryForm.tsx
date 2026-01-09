@@ -13,6 +13,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import axiosInstance from "@/lib/api/axiosInstance";
 
 export interface ICategory {
     id?: string;
@@ -21,9 +22,10 @@ export interface ICategory {
     description: string;
     images: string[];
     icon?: string;
-    keyPoints: string[];
+    features: string[];
     createdAt?: string;
     status?: "active" | "inactive";
+    display_order: number | string;
 }
 
 interface CategoryFormProps {
@@ -39,92 +41,97 @@ export function CategoryForm({
     onSave,
     initialData,
 }: CategoryFormProps) {
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState<ICategory>({
         title: initialData?.title ?? "",
         slug: initialData?.slug ?? "",
         description: initialData?.description ?? "",
         images: initialData?.images ?? [],
         icon: initialData?.icon ?? "",
-        keyPoints: initialData?.keyPoints ?? [""],
+        features: initialData?.features ?? [""],
         status: initialData?.status ?? "active",
+        display_order: initialData?.display_order
     });
 
-    const [images, setImages] = useState<string[]>(formData.images);
-    const [iconPreview, setIconPreview] = useState<string>(formData.icon || "");
+    const [imagesFile, setImagesFile] = useState<File[] | []>([]);
+    const [iconFile, setIconFile] = useState<File | null>(null);
 
     /* ---------- IMAGE UPLOAD ---------- */
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files) return;
-        const file = e.target.files[0];
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = () => {
-            if (reader.result) {
-                const updatedImages = [...images, reader.result as string];
-                setImages(updatedImages);
-                setFormData({ ...formData, images: updatedImages });
-            }
-        };
-        reader.readAsDataURL(file);
-        e.target.value = "";
+        setImagesFile((prev) => (
+            [...prev, file]
+        ));
+
+        setFormData((prev) => ({
+            ...prev,
+            images: [...prev.images, URL.createObjectURL(file)]
+        }))
     };
 
     const removeImage = (index: number) => {
-        const updatedImages = images.filter((_, i) => i !== index);
-        setImages(updatedImages);
-        setFormData({ ...formData, images: updatedImages });
+        // const updatedImages = images.filter((_, i) => i !== index);
+        // setImages(updatedImages);
+        // setFormData({ ...formData, images: updatedImages });
     };
 
     /* ---------- ICON UPLOAD ---------- */
     const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files?.length) return;
-        const file = e.target.files[0];
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = () => {
-            if (reader.result) {
-                setIconPreview(reader.result as string);
-                setFormData({ ...formData, icon: reader.result as string });
-            }
-        };
-        reader.readAsDataURL(file);
-        e.target.value = "";
+        setIconFile(file);
+        setFormData((prev) => ({
+            ...prev,
+            icon: URL.createObjectURL(file)
+        }))
     };
 
     const removeIcon = () => {
-        setIconPreview("");
-        setFormData({ ...formData, icon: "" });
+        setIconFile(null);
+        setFormData((prev) => ({
+            ...prev,
+            icon: ""
+        }))
     };
 
     /* ---------- KEY POINTS ---------- */
     const updateKeyPoint = (value: string, index: number) => {
-        const updated = [...formData.keyPoints];
+        const updated = [...formData.features];
         updated[index] = value;
-        setFormData({ ...formData, keyPoints: updated });
+        setFormData({ ...formData, features: updated });
     };
 
     const addKeyPoint = () => {
-        setFormData({ ...formData, keyPoints: [...formData.keyPoints, ""] });
+        setFormData({ ...formData, features: [...formData.features, ""] });
     };
 
     const removeKeyPoint = (index: number) => {
         setFormData({
             ...formData,
-            keyPoints: formData.keyPoints.filter((_, i) => i !== index),
+            features: formData.features.filter((_, i) => i !== index),
         });
     };
 
     /* ---------- SUBMIT ---------- */
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        try {
+            console.log("formData", formData);
+            const response = await axiosInstance.post("/admin/service_categories",
+                {
+                    ...formData,
+                    images: imagesFile,
+                    icon: iconFile
+                }
+            )
+            console.log("Add Category", response);
+        } catch (error) {
+            console.log(`Add category fail ${error?.message}`)
+        }
 
-        onSave({
-            ...formData,
-            slug:
-                formData.slug ||
-                formData.title.toLowerCase().replace(/\s+/g, "-"),
-            createdAt: initialData?.createdAt ?? new Date().toISOString(),
-        });
     };
 
     return (
@@ -181,10 +188,10 @@ export function CategoryForm({
                 <div className="space-y-2">
                     <Label>Category Icon</Label>
                     <div className="flex gap-3 flex-wrap">
-                        {iconPreview ? (
+                        {formData?.icon ? (
                             <div className="relative w-24 h-24">
                                 <img
-                                    src={iconPreview}
+                                    src={formData?.icon}
                                     className="w-full h-full object-cover rounded-md border"
                                 />
                                 <button
@@ -213,7 +220,7 @@ export function CategoryForm({
                 <div className="space-y-2">
                     <Label>Gallery Images</Label>
                     <div className="flex gap-2 flex-wrap">
-                        {images.map((img, index) => (
+                        {formData?.images.map((img, index) => (
                             <div key={index} className="relative w-24 h-24">
                                 <img
                                     src={img}
@@ -243,7 +250,7 @@ export function CategoryForm({
                 {/* KEY POINTS */}
                 <div className="space-y-3">
                     <Label>Key Points</Label>
-                    {formData.keyPoints.map((point, index) => (
+                    {formData?.features?.map((point, index) => (
                         <div key={index} className="flex gap-2">
                             <Input
                                 value={point}
@@ -267,22 +274,41 @@ export function CategoryForm({
                 </div>
 
                 {/* STATUS  */}
-                <div className="space-y-1.5 max-w-xs">
-                    <Label>Status</Label>
-                    <Select
-                        value={formData.status}
-                        onValueChange={(value: "active" | "inactive") =>
-                            setFormData({ ...formData, status: value })
-                        }
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="active">Active</SelectItem>
-                            <SelectItem value="inactive">Inactive</SelectItem>
-                        </SelectContent>
-                    </Select>
+
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                        <Label>Status</Label>
+                        <Select
+                            value={formData.status}
+                            onValueChange={(value: "active" | "inactive") =>
+                                setFormData({ ...formData, status: value })
+                            }
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="active">Active</SelectItem>
+                                <SelectItem value="inactive">Inactive</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Display Order */}
+                    <div className="space-y-1.5">
+                        <Label>Display Order</Label>
+                        <Input
+                            type="number"
+                            value={formData?.display_order ?? ""}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    display_order: (e.target.value),
+                                })
+                            }
+                        />
+                    </div>
                 </div>
 
                 {/* ---------- ACTIONS ---------- */}
