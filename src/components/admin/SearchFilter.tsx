@@ -50,14 +50,14 @@ export function SearchFilter({
       {filterOptions && onFilter && (
         <Select onValueChange={onFilter}>
           <SelectTrigger className="sm:w-[200px]">
-            <Filter className="w-4 h-4 mr-2" />
+            <Filter className="w-4 h-4" />
             <SelectValue placeholder="Filter by..." />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
             {filterOptions?.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
+              <SelectItem key={option?.value} value={option?.value}>
+                {option?.label}
               </SelectItem>
             ))}
           </SelectContent>

@@ -11,16 +11,22 @@ import { StatusToggle } from "@/components/admin/StatusToggle";
 import axiosInstance from "@/lib/api/axiosInstance";
 import { FormattedDate } from "@/lib/utils";
 import UpdateStatusModel from "@/components/admin/UpdateStatusModel";
+import DeleteModel from "@/components/admin/DeleteModel";
 
 export default function Banner() {
     const [bannerData, setBannerData] = useState<IBanner[] | []>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isStatusUpdateOpen, setIsStatusUpdateOpen] = useState(false);
-    const [updateData, setUpdateData] = useState(null);
+    const [activeData, setActiveData] = useState(null);
+    const [isDeleteModelOpen, setIsDeleteModelOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<IBanner | null>(null);
-    const [statusUpdateLoading, setStatusUpdateLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const itemsPerPage = 5;
+    const [filter, setFilter] = useState({
+        page_type: "",
+        search: "",
+    })
 
     const totalPages = Math.ceil(bannerData?.length / itemsPerPage);
 
@@ -28,7 +34,7 @@ export default function Banner() {
     useEffect(() => {
         const getBannerData = async () => {
             try {
-                const response = await axiosInstance.get("/admin/banners");
+                const response = await axiosInstance.get(`/admin/banners?search=${filter?.search}&page_type=${filter?.page_type}`);
                 if (response) {
                     setBannerData(response?.data?.data);
                 }
@@ -38,7 +44,98 @@ export default function Banner() {
         };
 
         getBannerData();
-    }, []);
+    }, [filter]);
+
+    // Open model for update status 
+    const statusModelOpen = (data: IBanner) => {
+        setActiveData(data)
+        setIsStatusUpdateOpen(true);
+    };
+
+
+    const handleSearch = (query: string) => {
+        setFilter((prev) => ({
+            ...prev,
+            search: query
+        }))
+    };
+
+    const handleFilter = (filter: string) => {
+        setFilter((prev) => ({
+            ...prev,
+            page_type: filter === "all" ? "" : filter
+        }))
+    };
+
+    // Open model for update banner
+    const handleEdit = (item: IBanner) => {
+        setEditingItem(item);
+        setIsFormOpen(true);
+    };
+
+    const updateStatusHandler = async (status: string) => {
+        try {
+            setLoading(true);
+            const response = await axiosInstance.post(
+                `admin/banners/${activeData?.id}`,
+                { status: status }
+            )
+            if (response) {
+                setBannerData((prev) =>
+                    prev?.map((item: IBanner) =>
+                        item.id === response?.data?.banner?.id
+                            ? {
+                                ...item,
+                                status: response?.data?.banner?.status,
+                            }
+                            : item
+                    )
+                );
+                toast.success("Banner status update successfully");
+                setIsStatusUpdateOpen(false);
+            }
+        } catch (error) {
+            console.log(`Banner status update fail ${error.message}`)
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // Open model for delete banner
+    const handleDelete = (item: IBanner) => {
+        setIsDeleteModelOpen(true);
+        setActiveData(item);
+    };
+
+    const deleteBannerHandler = async () => {
+        try {
+            setLoading(true);
+            const response = await axiosInstance.delete(
+                `admin/banners/${activeData?.id}`,
+            )
+            if (response) {
+                setBannerData((prev) =>
+                    prev?.filter(
+                        (item: IBanner) =>
+                            item.id !== activeData?.id
+                    )
+                );
+                toast.success("Banner delete successfully");
+                setIsDeleteModelOpen(false);
+            }
+        } catch (error) {
+            console.log(`Banner delete fail ${error.message}`)
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const PAGE_TYPES = [
+        { value: "home", label: "Home" },
+        { value: "about", label: "About" },
+        { value: "category", label: "Category" },
+        { value: "contact", label: "Contact Us" },
+    ];
 
     const columns: Column<IBanner>[] = [
         { key: "title", label: "Title", sortable: true },
@@ -112,66 +209,6 @@ export default function Banner() {
         }
     ];
 
-    // Open model for update status 
-    const statusModelOpen = (data: IBanner) => {
-        setUpdateData(data)
-        setIsStatusUpdateOpen(true);
-    };
-
-
-    const handleSearch = (query: string) => {
-
-    };
-
-    const handleFilter = (filter: string) => {
-
-    };
-
-    const handleEdit = (item: IBanner) => {
-        setEditingItem(item);
-        setIsFormOpen(true);
-    };
-
-    const handleDelete = (item: IBanner) => {
-        toast.success("Banner deleted successfully");
-    };
-
-    const PAGE_TYPES = [
-        { value: "home", label: "Home" },
-        { value: "about", label: "About" },
-        { value: "category", label: "Category" },
-        { value: "contact", label: "Contact Us" },
-    ];
-
-    const updateStatus = async (status: string) => {
-        try {
-            setStatusUpdateLoading(true);
-            const response = await axiosInstance.post(
-                `admin/banners/${updateData?.id}`,
-                { status: status }
-            )
-            console.log("update status", response?.data?.banner);
-            if (response) {
-                setBannerData((prev) =>
-                    prev?.map((item: IBanner) =>
-                        item.id === response?.data?.banner?.id
-                            ? {
-                                ...item,
-                                status: response?.data?.banner?.status,
-                            }
-                            : item
-                    )
-                );
-                toast.success("Banner status update successfully");
-                setIsStatusUpdateOpen(false);
-            }
-        } catch (error) {
-            console.log(`Banner status update fail ${error.message}`)
-        } finally {
-            setStatusUpdateLoading(false);
-        }
-    }
-
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4" data-aos="fade-down">
@@ -194,23 +231,22 @@ export default function Banner() {
                 />
             </div>
 
-            {bannerData?.length > 0 &&
-                <div data-aos="fade-up" data-aos-delay="100">
-                    <DataTable
-                        data={bannerData}
-                        columns={columns}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                        idKey="id"
+            <div data-aos="fade-up" data-aos-delay="100">
+                <DataTable
+                    data={bannerData}
+                    columns={columns}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    idKey="id"
+                />
+                {totalPages > 1 && (
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
                     />
-                    {totalPages > 1 && (
-                        <Pagination
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            onPageChange={setCurrentPage}
-                        />
-                    )}
-                </div>}
+                )}
+            </div>
 
             {/* Add & Update Banner Form */}
             <BannerForm
@@ -229,10 +265,20 @@ export default function Banner() {
                 onClose={() => {
                     setIsStatusUpdateOpen(false);
                 }}
-                initialStatus={updateData?.status}
-                message={`Are you want to update ${updateData?.page_type} banner status from`}
-                loading={statusUpdateLoading}
-                onSubmit={updateStatus}
+                initialStatus={activeData?.status}
+                message={`Are you want to update ${activeData?.page_type} banner status from`}
+                loading={loading}
+                onSubmit={updateStatusHandler}
+            />
+
+            <DeleteModel
+                isOpen={isDeleteModelOpen}
+                onClose={() => {
+                    setIsDeleteModelOpen(false);
+                }}
+                message={`Are you want to delete ${activeData?.page_type} banner`}
+                loading={loading}
+                onSubmit={deleteBannerHandler}
             />
         </div>
     );
