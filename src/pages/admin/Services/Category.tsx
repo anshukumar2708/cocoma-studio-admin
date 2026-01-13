@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { Film, Globe, Music, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,15 +7,23 @@ import { SearchFilter } from "@/components/admin/SearchFilter";
 import { Pagination } from "@/components/admin/Pagination";
 import { CategoryForm } from "@/components/admin/forms/Services/CategoryForm";
 import { StatusToggle } from "@/components/admin/StatusToggle";
+import axiosInstance from "@/lib/api/axiosInstance";
+
+
+interface IFeatures {
+    id: number;
+    feature: string;
+    display_order: number;
+}
 
 interface ICategory {
     id: string;
-    icon: any;
+    icon: string;
     title: string;
     slug: string;
     description: string;
     images: string[];
-    keyPoints: string[];
+    features: IFeatures[];
     status: string;
     createdAt: string;
 }
@@ -92,17 +100,32 @@ const categoryData = [
 
 
 export default function Category() {
-    const [filteredData, setFilteredData] = useState<ICategory[]>(categoryData);
+    const [categoryData, setCategoryData] = useState<ICategory[] | []>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<ICategory | null>(null);
     const itemsPerPage = 5;
 
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    const paginatedData = filteredData.slice(
+    const totalPages = Math.ceil(categoryData?.length / itemsPerPage);
+    const paginatedData = categoryData?.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
+
+    useEffect(() => {
+        const getCategoryData = async () => {
+            try {
+                const response = await axiosInstance.get(`/admin/service_categories`);
+                if (response) {
+                    setCategoryData(response?.data?.data);
+                }
+                console.log("Get category api", response?.data?.data);
+            } catch (error) {
+                console.log(`Get category api fail ${error?.message}`);
+            }
+        }
+        getCategoryData();
+    }, []);
 
     const handleToggle = (id: string) => {
 
@@ -114,10 +137,9 @@ export default function Category() {
             label: "Icon",
             sortable: false,
             render: (item: ICategory) => {
-                const Icon = item.icon;
                 return (
-                    <div className="flex items-center justify-center">
-                        <Icon className="w-8 h-8 text-gray-700" />
+                    <div className="w-14 flex items-center justify-center">
+                        <img src={item?.icon} className="w-full h-auto" alt="icon" />
                     </div>
                 );
             }
@@ -128,7 +150,7 @@ export default function Category() {
             sortable: true,
             render: (item: ICategory) => (
                 <p className="font-medium min-w-24 text-gray-900">
-                    {item.title}
+                    {item?.title}
                 </p>
             ),
         },
@@ -138,7 +160,7 @@ export default function Category() {
             sortable: true,
             render: (item: ICategory) => (
                 <p className="text-sm text-gray-600 line-clamp-2">
-                    {item.description}
+                    {item?.description}
                 </p>
             ),
         },
@@ -159,13 +181,13 @@ export default function Category() {
             ),
         },
         {
-            key: "keyPoints",
-            label: "Key Points",
+            key: "features",
+            label: "Features",
             sortable: false,
             render: (item: ICategory) => (
                 <ul className="list-disc pl-4 text-sm text-gray-700 min-w-32">
-                    {item.keyPoints?.map((point: string, index: number) => (
-                        <li key={index}>{point}</li>
+                    {item?.features?.map((item, index: number) => (
+                        <li key={index}>{item?.feature}</li>
                     ))}
                 </ul>
             ),
@@ -215,16 +237,12 @@ export default function Category() {
 
     };
 
-    const handleSave = (banner: Partial<ICategory>) => {
-
-    };
-
-    const FILTER_OPTION = [
-        { value: "visual-promotion", label: "Visual Promotion" },
-        { value: "post-production", label: "Post-Production" },
-        { value: "localisation-services", label: "Localisation Services" },
-        { value: "music-video-production", label: "Music Video Production" },
-    ];
+    // const FILTER_OPTION = [
+    //     { value: "visual-promotion", label: "Visual Promotion" },
+    //     { value: "post-production", label: "Post-Production" },
+    //     { value: "localisation-services", label: "Localisation Services" },
+    //     { value: "music-video-production", label: "Music Video Production" },
+    // ];
 
     return (
         <div className="space-y-6">
@@ -243,7 +261,7 @@ export default function Category() {
                 <SearchFilter
                     onSearch={handleSearch}
                     onFilter={handleFilter}
-                    filterOptions={FILTER_OPTION}
+                    // filterOptions={FILTER_OPTION}
                     placeholder="Search Category..."
                 />
             </div>
@@ -272,7 +290,6 @@ export default function Category() {
                     setIsFormOpen(false);
                     setEditingItem(null);
                 }}
-                onSave={handleSave}
             />
         </div>
     );

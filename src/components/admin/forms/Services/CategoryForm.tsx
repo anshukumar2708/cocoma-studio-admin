@@ -31,14 +31,12 @@ export interface ICategory {
 interface CategoryFormProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (data: ICategory) => void;
     initialData?: ICategory | null;
 }
 
 export function CategoryForm({
     isOpen,
     onClose,
-    onSave,
     initialData,
 }: CategoryFormProps) {
     const [loading, setLoading] = useState(false);
@@ -72,9 +70,19 @@ export function CategoryForm({
     };
 
     const removeImage = (index: number) => {
-        // const updatedImages = images.filter((_, i) => i !== index);
-        // setImages(updatedImages);
-        // setFormData({ ...formData, images: updatedImages });
+        setImagesFile((prev) => prev.filter((_, i) => i !== index));
+
+        setFormData((prev) => {
+            const imageToRemove = prev.images[index];
+            if (imageToRemove) {
+                URL.revokeObjectURL(imageToRemove);
+            }
+
+            return {
+                ...prev,
+                images: prev.images.filter((_, i) => i !== index),
+            };
+        });
     };
 
     /* ---------- ICON UPLOAD ---------- */
@@ -89,6 +97,7 @@ export function CategoryForm({
         }))
     };
 
+    /* ---------- ICON REMOVE ---------- */
     const removeIcon = () => {
         setIconFile(null);
         setFormData((prev) => ({
@@ -97,18 +106,18 @@ export function CategoryForm({
         }))
     };
 
-    /* ---------- KEY POINTS ---------- */
-    const updateKeyPoint = (value: string, index: number) => {
+    /* ---------- FEATURES ---------- */
+    const updateFeatures = (value: string, index: number) => {
         const updated = [...formData.features];
         updated[index] = value;
         setFormData({ ...formData, features: updated });
     };
 
-    const addKeyPoint = () => {
+    const addFeatures = () => {
         setFormData({ ...formData, features: [...formData.features, ""] });
     };
 
-    const removeKeyPoint = (index: number) => {
+    const removeFeatures = (index: number) => {
         setFormData({
             ...formData,
             features: formData.features.filter((_, i) => i !== index),
@@ -119,7 +128,7 @@ export function CategoryForm({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            console.log("formData", formData);
+            setLoading(true);
             const response = await axiosInstance.post("/admin/service_categories",
                 {
                     ...formData,
@@ -127,11 +136,15 @@ export function CategoryForm({
                     icon: iconFile
                 }
             )
+            if (response) {
+                onClose();
+            }
             console.log("Add Category", response);
         } catch (error) {
             console.log(`Add category fail ${error?.message}`)
+        } finally {
+            setLoading(false);
         }
-
     };
 
     return (
@@ -255,20 +268,20 @@ export function CategoryForm({
                             <Input
                                 value={point}
                                 onChange={(e) =>
-                                    updateKeyPoint(e.target.value, index)
+                                    updateFeatures(e.target.value, index)
                                 }
                             />
                             <Button
                                 type="button"
                                 variant="outline"
                                 size="icon"
-                                onClick={() => removeKeyPoint(index)}
+                                onClick={() => removeFeatures(index)}
                             >
                                 <X className="w-4 h-4" />
                             </Button>
                         </div>
                     ))}
-                    <Button type="button" variant="outline" onClick={addKeyPoint}>
+                    <Button type="button" variant="outline" onClick={addFeatures}>
                         + Add Key Point
                     </Button>
                 </div>
@@ -317,7 +330,7 @@ export function CategoryForm({
                         Cancel
                     </Button>
                     <Button type="submit">
-                        {initialData ? "Update Service Category" : "Create Service Category"}
+                        {initialData ? loading ? "Update" : "Updating" : loading ? "Create" : "Creating"}
                     </Button>
                 </div>
             </form>
